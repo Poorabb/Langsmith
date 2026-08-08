@@ -1,8 +1,10 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+import os 
 
+os.environ['LANGCHAIN_PROJECT']="2 Sequential Chain"
 load_dotenv()
 
 prompt1 = PromptTemplate(
@@ -15,12 +17,17 @@ prompt2 = PromptTemplate(
     input_variables=['text']
 )
 
-model = ChatOpenAI()
+model = ChatGoogleGenerativeAI(model="gemini-2.5-flash",temperature = 0.7)
 
 parser = StrOutputParser()
 
 chain = prompt1 | model | parser | prompt2 | model | parser
 
-result = chain.invoke({'topic': 'Unemployment in India'})
+CONFIG = {
+    "run_name": "test1",
+    "tags":['LLM'],
+    "metadata": {"temperature":0.7}
+}
+result = chain.invoke({'topic': 'Unemployment in India'},config = CONFIG)
 
 print(result)
